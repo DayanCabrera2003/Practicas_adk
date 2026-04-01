@@ -1,15 +1,16 @@
 from google.adk import Agent
+from general_agent import agente_general
+from math_agent import agente_matematico
 
-# Este agente es el maestro de orquesta se encarga de  recibir la consulta del usuario
-# e identificar a que agente especialista debe derivar la consulta.
 router_agente = Agent(
     name="Router_Agent",
     instruction=(
-        "Eres un agente orquestador. Tu trabajo no es responder en detalle, "
-        "sino identificar la intención del usuario y dirigir la consulta al "
-        "agente especialista correcto. Si el tema es matematico, deriva al "
-        "agente matematico. Si es una duda general, deriva al agente general. "
-        "Si no entiendes, pide aclaracion."
+        "Eres un agente orquestador. Tu trabajo es identificar la intención "
+        "del usuario y delegar al agente especialista correcto. "
+        "Si el tema es matemático, delega al Agente_Matematico. "
+        "Si es una duda general, delega al Agente_General. "
+        "No respondas tú directamente — siempre delega."
     ),
     model="gemini-2.5-flash-lite",
+    sub_agents=[agente_general, agente_matematico],
 )
