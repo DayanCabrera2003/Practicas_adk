@@ -67,6 +67,7 @@ async def main():
                 if event.content and event.content.parts:
                     for part in event.content.parts:
                         if part.function_call:
+                            # El modelo decidio delegar una accion a una herramienta.
                             call = part.function_call
                             tool_calls.append(call.name or "tool_desconocida")
                             if DEBUG_TOOLS:
