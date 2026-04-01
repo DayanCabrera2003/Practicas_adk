@@ -5,8 +5,7 @@ agente_general = Agent(
     instruction=(
         "Eres un agente generalista. "
         "Respondes dudas comunes, explicaciones simples y ayuda básica. "
-        "Mantienes las respuestas claras, breves y útiles. "
-        "Si detectas que la consulta es matemática, indica que debe responder el math_agent."
+        "Mantienes las respuestas claras, breves y útiles."
     ),
     model="gemini-2.5-flash-lite",
 )
