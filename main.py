@@ -1,10 +1,15 @@
 import asyncio
+import logging
 from google import adk
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 from agent import mi_primer_agente
+
 APP_NAME = "asistente_app"
 USER_ID = "usuario_1"
+
+# Evita el warning de partes no textuales cuando el modelo emite function_call.
+logging.getLogger("google_genai.types").setLevel(logging.ERROR)
 
 async def main():
     """
@@ -47,6 +52,7 @@ async def main():
             )
 
             response_text = ""
+            tool_result = None
 
             # Ejecuta el agente en streaming:
             async for event in runner.run_async(
@@ -54,6 +60,11 @@ async def main():
                 session_id=session.id,
                 new_message=message,
             ):
+                if event.content and event.content.parts:
+                    for part in event.content.parts:
+                        if part.function_response and part.function_response.response:
+                            tool_result = part.function_response.response.get("result")
+
                 # Nos interesa solo el evento de respuesta final del agente, hay otros eventos
                 # intermedios que tienen usos pero no en este ejemplo.
                 if event.is_final_response() and event.content and event.content.parts:
@@ -63,6 +74,10 @@ async def main():
             # Si hubo texto, lo mostramos en consola.
             if response_text:
                 print(f"\nAgente: {response_text}")
+            elif tool_result is not None:
+                print(f"\nAgente: El resultado es {tool_result}")
+            else:
+                print("\nAgente: No se recibio una respuesta de texto.")
 
         except KeyboardInterrupt:
             break
